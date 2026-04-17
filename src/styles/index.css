@@ -1,0 +1,33 @@
+/* index.css — Global styles that apply to the entire app.
+   Think of this as the dress code for your whole restaurant —
+   rules that apply everywhere, not just one room. */
+
+/* Remove default browser margin and padding from everything */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Makes sizing predictable across all elements */
+}
+
+/* Set the default font for the whole app */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    sans-serif;
+  background-color: #f0f4f8;
+  color: #333;
+}
+
+/* Make buttons show a hand cursor on hover by default */
+button {
+  cursor: pointer;
+}
+
+/* Remove the default blue outline on focused inputs
+   and replace with a subtle blue border instead */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #1a3c5e !important;
+  box-shadow: 0 0 0 3px rgba(26, 60, 94, 0.1);
+}

@@ -1,0 +1,108 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
+
+:root {
+  /* ── Color Palette (HSL for easier manipulation) ── */
+  --primary-base: 222; /* Slate */
+  --primary: hsl(var(--primary-base), 47%, 11%); /* #0f172a */
+  --primary-light: hsl(var(--primary-base), 47%, 20%);
+  
+  --accent-base: 188; /* Cyan */
+  --accent: hsl(var(--accent-base), 95%, 43%); /* #06b6d4 */
+  --accent-light: hsl(var(--accent-base), 95%, 55%);
+  --accent-glow: hsla(var(--accent-base), 95%, 43%, 0.3);
+
+  --surface-base: 210;
+  --bg: hsl(var(--surface-base), 40%, 98%); /* #f8fafc */
+  --card: #ffffff;
+  --card-border: hsla(var(--surface-base), 20%, 90%, 0.8);
+  
+  --text-main: hsl(var(--primary-base), 40%, 20%);
+  --text-muted: hsl(var(--primary-base), 20%, 45%);
+  
+  /* ── Design Tokens ── */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 9999px;
+  
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 10px 10px -5px rgba(15, 23, 42, 0.04);
+  
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --glass: backdrop-filter: blur(12px) saturate(180%);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg);
+  color: var(--text-main);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+  color: var(--primary);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* ── Utility Classes ── */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.gradient-bg {
+  background: radial-gradient(circle at top right, hsla(var(--accent-base), 95%, 43%, 0.05), transparent),
+              radial-gradient(circle at bottom left, hsla(var(--primary-base), 47%, 11%, 0.02), transparent),
+              var(--bg);
+}
+
+button {
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-glow);
+}
+
+::selection {
+  background: var(--accent);
+  color: white;
+}
+
+/* ── Custom Scrollbar ── */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+  border: 3px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
