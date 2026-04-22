@@ -1,8 +1,4 @@
-// AdminLayout.jsx — Shared layout for all admin pages.
-// Contains the admin navbar and sidebar.
-// Uses React Router's Outlet to render child routes.
-// Modular — can be extracted to a separate app in future
-// by just moving this folder and its children.
+// AdminLayout.jsx
 
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
@@ -19,17 +15,18 @@ function AdminLayout() {
   ]
 
   return (
-    <div style={styles.wrapper}>
-
+    <div style={styles.wrapper} className="gradient-bg">
       {/* Top navbar */}
-      <div style={styles.navbar}>
+      <div style={styles.navbar} className="glass">
         <div style={styles.navLeft}>
-          <span style={styles.logo}>SourceHUB</span>
-          <span style={styles.adminBadge}>SUPER ADMIN</span>
+          <div style={styles.logoCircle}>S</div>
+          <span style={styles.logoText}>SourceHUB</span>
+          <span style={styles.adminBadge}>ADMIN</span>
         </div>
         <div style={styles.navRight}>
           <span style={styles.userInfo}>
-            👤 {user?.firstName} {user?.lastName}
+            <span style={styles.userAvatar}>{user?.firstName?.charAt(0) || 'A'}</span>
+            <span style={styles.userName}>{user?.firstName} {user?.lastName}</span>
           </span>
           <button
             style={styles.logoutBtn}
@@ -41,72 +38,111 @@ function AdminLayout() {
       </div>
 
       <div style={styles.body}>
-
         {/* Sidebar */}
-        <div style={styles.sidebar}>
-          {navItems.map(item => (
-            <button
-              key={item.path}
-              style={{
-                ...styles.sidebarItem,
-                ...(item.path === '/admin'
-                  ? location.pathname === '/admin' ? styles.sidebarItemActive : {}
-                  : location.pathname.startsWith(item.path) ? styles.sidebarItemActive : {}
-                ),
-              }}
-              onClick={() => navigate(item.path)}
-            >
-              {item.label}
-            </button>
-          ))}
+        <div style={styles.sidebarContainer}>
+          <div className="glass" style={styles.sidebarGlass}>
+            <div style={styles.sidebarMenu}>
+              <p style={styles.sidebarTitle}>MENU</p>
+              {navItems.map(item => {
+                const isActive = item.path === '/admin' 
+                  ? location.pathname === '/admin' 
+                  : location.pathname.startsWith(item.path);
+
+                return (
+                  <button
+                    key={item.path}
+                    style={{
+                      ...styles.sidebarItem,
+                      ...(isActive ? styles.sidebarItemActive : {}),
+                    }}
+                    onClick={() => navigate(item.path)}
+                  >
+                    {item.label}
+                  </button>
+                )
+              })}
+            </div>
+            
+            <div style={styles.sidebarFooter}>
+              <button style={styles.backToPortalBtn} onClick={() => navigate('/tool-launcher')}>
+                ← Portal
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Page content */}
         <div style={styles.content}>
-          <Outlet />
+          <div style={styles.contentInner}>
+            <Outlet />
+          </div>
         </div>
-
       </div>
     </div>
   )
 }
 
 const styles = {
-  wrapper:  { minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#f0f4f8' },
+  wrapper:  { minHeight: '100vh', display: 'flex', flexDirection: 'column', color: 'var(--text-main)' },
   navbar: {
-    backgroundColor: '#1a1a2e', padding: '14px 32px',
-    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+    padding: '10px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+    borderBottom: '1px solid rgba(255,255,255,0.4)', zIndex: 100, position: 'relative',
+    boxShadow: '0 2px 4px -1px rgba(0, 0, 0, 0.05)', borderRadius: 0,
   },
-  navLeft:    { display: 'flex', alignItems: 'center', gap: '12px' },
-  logo:       { color: '#fff', fontSize: '20px', fontWeight: '700' },
+  navLeft:    { display: 'flex', alignItems: 'center', gap: '8px' },
+  logoCircle: { 
+    width: '26px', height: '26px', backgroundColor: 'var(--primary)', color: '#fff', 
+    borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+    fontWeight: '800', fontSize: '13px' 
+  },
+  logoText:   { color: 'var(--primary)', fontSize: '16px', fontWeight: '800', letterSpacing: '-0.5px' },
   adminBadge: {
-    backgroundColor: '#e74c3c', color: '#fff',
-    padding: '3px 10px', borderRadius: '12px',
-    fontSize: '11px', fontWeight: '700', letterSpacing: '1px',
+    backgroundColor: 'var(--accent)', color: '#fff', padding: '2px 6px', borderRadius: '8px',
+    fontSize: '9px', fontWeight: '800', letterSpacing: '0.5px', textTransform: 'uppercase'
   },
-  navRight:   { display: 'flex', alignItems: 'center', gap: '12px' },
-  userInfo:   { color: 'rgba(255,255,255,0.7)', fontSize: '13px' },
+  navRight:   { display: 'flex', alignItems: 'center', gap: '14px' },
+  userInfo:   { display: 'flex', alignItems: 'center', gap: '8px' },
+  userAvatar: {
+    width: '26px', height: '26px', backgroundColor: '#e2e8f0', borderRadius: '50%',
+    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700', color: 'var(--primary)'
+  },
+  userName:   { color: 'var(--text-main)', fontSize: '12px', fontWeight: '600' },
   logoutBtn: {
-    background: 'none', border: '1px solid rgba(255,255,255,0.3)',
-    color: 'rgba(255,255,255,0.7)', fontSize: '13px',
-    cursor: 'pointer', padding: '6px 12px', borderRadius: '4px',
+    background: 'rgba(255,255,255,0.5)', border: '1px solid rgba(15,23,42,0.1)', color: 'var(--primary)', 
+    fontSize: '11px', fontWeight: '600', cursor: 'pointer', padding: '6px 12px', borderRadius: 'var(--radius-sm)',
+    transition: 'var(--transition)'
   },
-  body:       { display: 'flex', flex: 1 },
-  sidebar: {
-    width: '220px', backgroundColor: '#fff',
-    borderRight: '1px solid #e0e0e0',
-    padding: '20px 0', display: 'flex', flexDirection: 'column',
+  body: { display: 'flex', flex: 1, overflow: 'hidden' },
+  sidebarContainer: {
+    width: '220px', padding: '16px', display: 'flex', flexDirection: 'column'
   },
+  sidebarGlass: {
+    flex: 1, borderRadius: 'var(--radius-md)', display: 'flex', flexDirection: 'column', 
+    justifyContent: 'space-between', padding: '16px 12px', boxShadow: 'var(--shadow-md)',
+  },
+  sidebarTitle: {
+    fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', letterSpacing: '1px',
+    marginBottom: '10px', paddingLeft: '8px'
+  },
+  sidebarMenu: { display: 'flex', flexDirection: 'column', gap: '2px' },
   sidebarItem: {
-    padding: '12px 24px', background: 'none', border: 'none',
-    textAlign: 'left', fontSize: '14px', color: '#444',
-    cursor: 'pointer', borderLeft: '3px solid transparent',
+    padding: '10px 12px', background: 'transparent', border: 'none', borderRadius: 'var(--radius-sm)',
+    textAlign: 'left', fontSize: '13px', color: 'var(--text-muted)', fontWeight: '500',
+    cursor: 'pointer', transition: 'var(--transition)', display: 'flex', alignItems: 'center',
   },
   sidebarItemActive: {
-    backgroundColor: '#f0f4f8', color: '#1a3c5e',
-    fontWeight: '700', borderLeft: '3px solid #1a3c5e',
+    backgroundColor: 'rgba(255,255,255,0.6)', color: 'var(--primary)', fontWeight: '700',
+    boxShadow: 'var(--shadow-sm)'
   },
-  content:    { flex: 1, padding: '32px', overflowY: 'auto' },
+  sidebarFooter: {
+    borderTop: '1px solid rgba(0,0,0,0.05)', paddingTop: '12px'
+  },
+  backToPortalBtn: {
+    width: '100%', padding: '10px', background: 'transparent', border: 'none', textAlign: 'center',
+    color: 'var(--text-muted)', fontSize: '12px', fontWeight: '600', cursor: 'pointer', transition: 'var(--transition)'
+  },
+  content: { flex: 1, overflowY: 'auto', padding: '16px' },
+  contentInner: { maxWidth: '1200px', margin: '0 auto', width: '100%' }
 }
 
 export default AdminLayout

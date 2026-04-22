@@ -1,6 +1,3 @@
-// AdminDashboard.jsx — Super admin usage dashboard.
-// Shows platform-wide stats and per-tenant breakdown.
-
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getAdminStats } from '../../services/api'
@@ -37,7 +34,7 @@ function AdminDashboard() {
   if (!data)     return null
 
   return (
-    <div>
+    <div style={styles.animFadeIn}>
       <div style={styles.pageHeader}>
         <h1 style={styles.heading}>Platform Dashboard</h1>
         <button style={styles.refreshBtn} onClick={loadStats}>↻ Refresh</button>
@@ -45,24 +42,24 @@ function AdminDashboard() {
 
       {/* ── Summary Cards ── */}
       <div style={styles.cardsRow}>
-        <div style={styles.card}>
+        <div className="glass" style={styles.card}>
           <p style={styles.cardLabel}>Total Tenants</p>
           <p style={styles.cardValue}>{data.summary.totalTenants}</p>
           <p style={styles.cardSub}>{data.summary.activeTenants} active</p>
         </div>
-        <div style={styles.card}>
+        <div className="glass" style={styles.card}>
           <p style={styles.cardLabel}>Total Users</p>
           <p style={styles.cardValue}>{data.summary.totalUsers}</p>
           <p style={styles.cardSub}>{data.summary.activeUsers} active</p>
         </div>
-        <div style={styles.card}>
+        <div className="glass" style={styles.card}>
           <p style={styles.cardLabel}>Total Quotations</p>
           <p style={styles.cardValue}>{data.summary.totalQuotations}</p>
           <p style={styles.cardSub}>{data.summary.quotationsThisMonth} this month</p>
         </div>
-        <div style={{ ...styles.card, borderTop: '4px solid #e74c3c' }}>
+        <div className="glass" style={{ ...styles.card, borderTop: '3px solid var(--accent)' }}>
           <p style={styles.cardLabel}>Expiry Alerts</p>
-          <p style={{ ...styles.cardValue, color: '#e74c3c' }}>
+          <p style={{ ...styles.cardValue, color: 'var(--accent)' }}>
             {data.tenants.filter(t => t.expiryAlert).length}
           </p>
           <p style={styles.cardSub}>expiring within 30 days</p>
@@ -71,7 +68,7 @@ function AdminDashboard() {
 
       {/* ── Expiry Alerts ── */}
       {data.tenants.filter(t => t.expiryAlert).length > 0 && (
-        <div style={styles.alertBox}>
+        <div className="glass" style={styles.alertBox}>
           <p style={styles.alertTitle}>⚠️ Licence Expiry Alerts</p>
           {data.tenants
             .filter(t => t.expiryAlert)
@@ -88,10 +85,11 @@ function AdminDashboard() {
                   Expires: {formatDate(t.licenceExpiryDate)}
                 </span>
                 <button
+                  className="premium-btn"
                   style={styles.alertAction}
                   onClick={() => navigate(`/admin/tenants/${t._id}`)}
                 >
-                  Manage →
+                  Manage
                 </button>
               </div>
             ))
@@ -100,26 +98,27 @@ function AdminDashboard() {
       )}
 
       {/* ── Tenant Breakdown Table ── */}
-      <div style={styles.tableCard}>
+      <div className="glass" style={styles.tableCard}>
         <div style={styles.tableHeader}>
           <h3 style={styles.tableTitle}>Tenant Breakdown</h3>
           <button
+            className="premium-btn"
             style={styles.newBtn}
             onClick={() => navigate('/admin/tenants')}
           >
-            View All Tenants
+            View All
           </button>
         </div>
 
         <div style={styles.tableWrapper}>
           <table style={styles.table}>
             <thead>
-              <tr style={styles.thead}>
+              <tr style={styles.theadRow}>
                 <th style={styles.th}>Company</th>
                 <th style={styles.th}>Status</th>
                 <th style={styles.th}>Tools</th>
                 <th style={styles.th}>Users</th>
-                <th style={styles.th}>Total Quotations</th>
+                <th style={styles.th}>Quotations</th>
                 <th style={styles.th}>This Month</th>
                 <th style={styles.th}>Last Active</th>
                 <th style={styles.th}>Expires</th>
@@ -130,12 +129,9 @@ function AdminDashboard() {
               {data.tenants.map((tenant, i) => (
                 <tr
                   key={tenant.tenantId}
-                  style={{
-                    ...styles.tr,
-                    backgroundColor: tenant.expiryAlert
-                      ? '#fff5f5'
-                      : i % 2 === 0 ? '#ffffff' : '#f8f9fa',
-                  }}
+                  style={styles.tr}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.7)'}
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 >
                   <td style={styles.td}>
                     <span style={styles.companyName}>{tenant.companyName}</span>
@@ -144,7 +140,7 @@ function AdminDashboard() {
                   <td style={styles.td}>
                     <span style={{
                       ...styles.badge,
-                      backgroundColor: tenant.isActive ? '#e8f5e9' : '#ffebee',
+                      backgroundColor: tenant.isActive ? 'rgba(46, 125, 50, 0.1)' : 'rgba(198, 40, 40, 0.1)',
                       color:           tenant.isActive ? '#2e7d32' : '#c62828',
                     }}>
                       {tenant.isActive ? 'Active' : 'Inactive'}
@@ -172,13 +168,14 @@ function AdminDashboard() {
                   <td style={styles.td}>{formatDate(tenant.lastActivityAt)}</td>
                   <td style={{
                     ...styles.td,
-                    color: tenant.expiryAlert ? '#c62828' : '#444',
-                    fontWeight: tenant.expiryAlert ? '700' : 'normal',
+                    color: tenant.expiryAlert ? '#c62828' : 'var(--text-muted)',
+                    fontWeight: tenant.expiryAlert ? '700' : '500',
                   }}>
                     {formatDate(tenant.licenceExpiryDate)}
                   </td>
                   <td style={styles.td}>
                     <button
+                      className="premium-btn"
                       style={styles.manageBtn}
                       onClick={() => navigate(`/admin/tenants/${tenant._id}`)}
                     >
@@ -196,85 +193,73 @@ function AdminDashboard() {
 }
 
 const styles = {
-  loading:     { padding: '40px', color: '#666', textAlign: 'center' },
-  error:       { padding: '16px', backgroundColor: '#fff5f5', color: '#c53030', borderRadius: '8px' },
-  pageHeader:  { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' },
-  heading:     { fontSize: '24px', color: '#1a1a2e', margin: 0 },
+  animFadeIn:  { animation: 'fadeIn 0.4s ease forwards' },
+  loading:     { padding: '24px', color: 'var(--text-muted)', textAlign: 'center', fontWeight: '500', fontSize: '13px' },
+  error:       { padding: '12px', backgroundColor: '#fff5f5', color: '#c53030', borderRadius: 'var(--radius-sm)', border: '1px solid #fc8181', fontSize: '12px' },
+  pageHeader:  { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' },
+  heading:     { fontSize: '24px', color: 'var(--primary)', margin: 0, fontWeight: '800', letterSpacing: '-0.5px' },
   refreshBtn: {
-    padding: '8px 16px', backgroundColor: 'transparent',
-    border: '1px solid #ddd', borderRadius: '6px',
-    fontSize: '13px', cursor: 'pointer', color: '#666',
+    padding: '6px 12px', backgroundColor: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)',
+    border: '1px solid rgba(255,255,255,0.3)', borderRadius: 'var(--radius-sm)',
+    fontSize: '11px', cursor: 'pointer', color: 'var(--primary)', fontWeight: '600',
+    transition: 'var(--transition)'
   },
   cardsRow: {
-    display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-    gap: '16px', marginBottom: '24px',
+    display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)',
+    gap: '12px', marginBottom: '20px',
   },
   card: {
-    backgroundColor: '#fff', borderRadius: '10px',
-    padding: '20px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-    borderTop: '4px solid #1a1a2e',
+    padding: '16px', borderRadius: 'var(--radius-md)', 
+    borderTop: '3px solid var(--primary)', transition: 'var(--transition)'
   },
-  cardLabel: { fontSize: '11px', color: '#888', fontWeight: '700', textTransform: 'uppercase', marginBottom: '8px' },
-  cardValue: { fontSize: '32px', fontWeight: '700', color: '#1a1a2e', marginBottom: '4px' },
-  cardSub:   { fontSize: '12px', color: '#999' },
+  cardLabel: { fontSize: '10px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', marginBottom: '4px', letterSpacing: '0.5px' },
+  cardValue: { fontSize: '24px', fontWeight: '800', color: 'var(--primary)', marginBottom: '2px' },
+  cardSub:   { fontSize: '11px', color: 'var(--text-muted)', fontWeight: '500' },
   alertBox: {
-    backgroundColor: '#fff5f5', border: '1px solid #fc8181',
-    borderRadius: '10px', padding: '16px', marginBottom: '24px',
+    borderLeft: '3px solid var(--accent)', padding: '16px', marginBottom: '20px', borderRadius: 'var(--radius-md)'
   },
-  alertTitle:   { fontWeight: '700', color: '#c62828', marginBottom: '12px', fontSize: '14px' },
+  alertTitle:   { fontWeight: '800', color: 'var(--text-main)', marginBottom: '12px', fontSize: '13px' },
   alertRow: {
-    display: 'flex', alignItems: 'center', gap: '16px',
-    padding: '8px 0', borderBottom: '1px solid #fee2e2',
+    display: 'flex', alignItems: 'center', gap: '12px',
+    padding: '8px 0', borderBottom: '1px solid rgba(0,0,0,0.05)',
     flexWrap: 'wrap',
   },
-  alertCompany: { fontWeight: '600', color: '#333', flex: 1 },
-  alertDays:    { fontSize: '13px', color: '#c62828', fontWeight: '600' },
-  alertExpiry:  { fontSize: '12px', color: '#666' },
-  alertAction: {
-    padding: '4px 12px', backgroundColor: '#c62828',
-    color: '#fff', border: 'none', borderRadius: '4px',
-    fontSize: '12px', cursor: 'pointer',
-  },
+  alertCompany: { fontWeight: '700', color: 'var(--primary)', flex: 1, fontSize: '13px' },
+  alertDays:    { fontSize: '11px', color: 'var(--accent)', fontWeight: '700', backgroundColor: 'rgba(6, 182, 212, 0.1)', padding: '3px 8px', borderRadius: '10px' },
+  alertExpiry:  { fontSize: '11px', color: 'var(--text-muted)', fontWeight: '500' },
+  alertAction: { padding: '4px 10px', width: 'auto', fontSize: '10px' },
   tableCard: {
-    backgroundColor: '#fff', borderRadius: '10px',
-    boxShadow: '0 1px 4px rgba(0,0,0,0.06)', overflow: 'hidden',
+    borderRadius: 'var(--radius-md)', overflow: 'hidden', padding: '0'
   },
   tableHeader: {
-    display: 'flex', justifyContent: 'space-between',
-    alignItems: 'center', padding: '16px 20px',
-    borderBottom: '1px solid #f0f0f0',
+    display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+    padding: '12px 16px', borderBottom: '1px solid rgba(0,0,0,0.05)',
   },
-  tableTitle: { fontSize: '15px', fontWeight: '700', color: '#1a1a2e', margin: 0 },
-  newBtn: {
-    padding: '8px 16px', backgroundColor: '#1a1a2e',
-    color: '#fff', border: 'none', borderRadius: '6px',
-    fontSize: '13px', cursor: 'pointer',
-  },
-  tableWrapper: { overflowX: 'auto' },
-  table:        { width: '100%', borderCollapse: 'collapse' },
-  thead:        { backgroundColor: '#1a1a2e' },
+  tableTitle: { fontSize: '14px', fontWeight: '800', color: 'var(--primary)', margin: 0 },
+  newBtn:     { padding: '6px 12px', width: 'auto', fontSize: '11px' },
+  tableWrapper: { overflowX: 'auto', padding: '0 16px 16px 16px' },
+  table:        { width: '100%', borderCollapse: 'collapse', marginTop: '12px' },
+  theadRow:     { borderBottom: '2px solid rgba(0,0,0,0.1)' },
   th: {
-    padding: '10px 16px', textAlign: 'left',
-    fontSize: '11px', fontWeight: '600',
-    color: '#fff', whiteSpace: 'nowrap',
+    padding: '8px 12px', textAlign: 'left', fontSize: '10px', fontWeight: '700',
+    color: 'var(--text-muted)', whiteSpace: 'nowrap', textTransform: 'uppercase', letterSpacing: '0.5px'
   },
-  tr:           { borderBottom: '1px solid #f0f0f0' },
-  td:           { padding: '12px 16px', fontSize: '13px', color: '#333', verticalAlign: 'middle' },
-  companyName:  { fontWeight: '600', display: 'block', color: '#1a1a2e' },
-  tenantId:     { fontSize: '11px', color: '#888', display: 'block' },
+  tr:           { borderBottom: '1px solid rgba(0,0,0,0.05)', transition: 'var(--transition)' },
+  td:           { padding: '10px 12px', fontSize: '12px', color: 'var(--text-main)', verticalAlign: 'middle', fontWeight: '500' },
+  companyName:  { fontWeight: '700', display: 'block', color: 'var(--primary)', fontSize: '13px' },
+  tenantId:     { fontSize: '10px', color: 'var(--text-muted)', display: 'block', marginTop: '2px' },
   badge: {
-    padding: '3px 10px', borderRadius: '12px',
-    fontSize: '11px', fontWeight: '600',
+    padding: '3px 8px', borderRadius: 'var(--radius-full)',
+    fontSize: '10px', fontWeight: '700', letterSpacing: '0.2px'
   },
   toolsList:    { display: 'flex', gap: '4px', flexWrap: 'wrap' },
   toolBadge: {
-    padding: '2px 8px', backgroundColor: '#e8f4fd',
-    color: '#1a3c5e', borderRadius: '10px', fontSize: '11px', fontWeight: '600',
+    padding: '2px 6px', backgroundColor: 'rgba(255,255,255,0.8)', border: '1px solid rgba(0,0,0,0.1)',
+    color: 'var(--primary)', borderRadius: 'var(--radius-full)', fontSize: '9px', fontWeight: '700',
   },
   manageBtn: {
-    padding: '5px 12px', backgroundColor: '#1a1a2e',
-    color: '#fff', border: 'none', borderRadius: '4px',
-    fontSize: '12px', cursor: 'pointer',
+    padding: '4px 10px', width: 'auto', fontSize: '10px', background: 'transparent',
+    border: '1px solid var(--primary)', color: 'var(--primary)', boxShadow: 'none'
   },
 }
 
